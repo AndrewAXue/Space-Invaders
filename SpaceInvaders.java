@@ -1,4 +1,11 @@
 package SpaceInvaders;
+//Made by Andrew Xue
+//a3xue@edu.uwaterloo.ca
+//SPACE INVADERS! Use the arrow keys to control your tank. You can press and hold a key
+//    for continuous movement. Press the space bar to shoot upwards at the aliens. Hide
+//    behind the shields to block alien bullets, and destroy all the aliens to win! Be
+//    careful, the aliens will speed up as more and more are destroyed.
+//Part of a project to learn Java over the winter break and create retro video games
 
 import java.awt.Color;
 import java.awt.Font;
@@ -97,6 +104,7 @@ public class SpaceInvaders {
 			for (int x=0; x<5; x++){
 				for (int y=0; y<10; y++){
 					if (gamestate.get(x).get(y)>=1){
+						if (alieny+(x*70)>=780){dead=true; window.repaint();}
 						grap.fillRect(firstalien+(y*70), alieny+(x*70), aliensize, aliensize);
 						if (shoot.nextInt(shootchance-(killed*30))==0){
 							alienshots.add(new ArrayList<Integer>());
