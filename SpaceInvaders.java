@@ -54,18 +54,20 @@ public class SpaceInvaders {
 	Random shoot = new Random();
 	
 	public static void main(String[] args){
+		// Adds to the gamestate ArrayList for storage of alien status
 		for (int x=0; x<5; x++)gamestate.add(new ArrayList<Integer>());
 		for (int x=0; x<5; x++){
 			for (int y=0; y<10; y++){
 				gamestate.get(x).add(1);
 			}
 		}
+		// Adds to the sheieldstate ArrayList for storage of shield status
 		for (int x=0; x<20; x++){
 			shieldstate.add(4);
 		}
 		new SpaceInvaders().go();
 	}
-	
+	// Creates the JFrame and adds the KeyListener and game elements. Also starts the game
 	void go() {
 		window.setSize(815, 845);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,7 +78,8 @@ public class SpaceInvaders {
 		window.repaint();
 		move();
 	}
-	
+	// A JComponent containing the player position, all the aliens, the shields, as well as
+	//    the bullet if it is in play
 	private class spacegrid extends JComponent {
 		public void paintComponent(Graphics g){
 			Graphics2D grap = (Graphics2D) g;
@@ -139,14 +142,14 @@ public class SpaceInvaders {
 		}
 	}
 	
+	// Takes key inputs from the player. Uses a toggled change in movement variable for smooth
+	//    movement
 	private class keyactions implements KeyListener {
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode()==KeyEvent.VK_LEFT){
-				dx=-playerspeed;
-			}
-			else if (e.getKeyCode()==KeyEvent.VK_RIGHT){
-				dx=playerspeed;
-			}
+			if (e.getKeyCode()==KeyEvent.VK_LEFT)dx=-playerspeed;
+			else if (e.getKeyCode()==KeyEvent.VK_RIGHT)dx=playerspeed;
+			
+			// Puts a bullet into play at the player's gun position
 			else if (e.getKeyCode()==KeyEvent.VK_SPACE&&!playbullet){
 				playbulletx=playerx+21;
 				playbullety=764;
@@ -155,28 +158,30 @@ public class SpaceInvaders {
 		}
 
 		public void keyReleased(KeyEvent e) {
-			if (e.getKeyCode()==KeyEvent.VK_LEFT||e.getKeyCode()==KeyEvent.VK_RIGHT){
+			if (e.getKeyCode()==KeyEvent.VK_LEFT||e.getKeyCode()==KeyEvent.VK_RIGHT)
 				dx=0;
 			}
-		}
-
 		public void keyTyped(KeyEvent e) {}
 		
 	}
-	
+	// Moves all the game elements and executes logic
 	private void move(){
 		while (!dead){
+			// Moves the player and restricting movement to within the game screen
 			if (playerx>=5&&dx<0) playerx+=dx;
 			else if (playerx<=755&&dx>0) playerx+=dx;
+			// Speeds up the movement of the aliens
 			if (target==killed){
 				delay/=2;
 				move=0;
 				target+=Math.max(1,(50-killed)/3);
 			}
+			// Moves all the aliens every (delay) seconds
 			if (move==delay){
 			if (alienmoveright&&firstalien+40+((9-rightrowkilled)*70)<805){
 				firstalien+=5;
 			}
+			// Changes the direction of the aliens if any hit the edge of the screen
 			else if (alienmoveright&&firstalien+40+((9-rightrowkilled)*70)>=805){
 				alieny+=50;
 				alienmoveright=false;
@@ -189,9 +194,11 @@ public class SpaceInvaders {
 				alienmoveright=true;}
 			move=0;}
 			else {move++;}
+			// Moves the bullet and detect if it hits any aliens
 			if (playbullet){
 				playbullety-=bulletspeed;
 				alienhit();
+			// Removes the bullet if it exits the game screen
 			if (playbullety<=0) {playbullet=false;}}
 			window.repaint();
 			try {
@@ -202,10 +209,12 @@ public class SpaceInvaders {
 		
 		}
 	}
-	
+	// Make the aliens shoot and logic for alien shots
 	private void alienshoot(int index, int xcoord, int ycoord){
+		// Removes shots if the exit game screen
 		if (ycoord>=805)alienshots.remove(index);
 		else{
+		// If the alienshots hit a shield, weaken the shield and remove the bullet
 		for (int x=0; x<20; x++){
 			if (shieldstate.get(x)>0){
 					int mod=(x%4);
@@ -227,8 +236,8 @@ public class SpaceInvaders {
 						shieldstate.set(x, shieldstate.get(x)-1);
 						alienshots.remove(index);}
 			}
-			
 		}
+		// If any alienbullet hits the player, the game is over
 		for (int x=0; x<alienshots.size(); x++){
 			int bullxcoord= alienshots.get(x).get(0);
 			int bullycoord= alienshots.get(x).get(1);
@@ -236,11 +245,12 @@ public class SpaceInvaders {
 					bullycoord<=800) {
 					dead=true;
 					window.repaint();}
-		}
+			}
 		}
 	}
-	
+	// Detects if anything is killed and responds accordingly
 	private void alienhit(){
+		// if an alien is hit, if necessary the amount of movement from side to side is decreased
 		for (int x=0; x<10; x++){
 			for (int y=0; y<5; y++){
 				if (gamestate.get(y).get(x)!=0){
@@ -257,6 +267,7 @@ public class SpaceInvaders {
 				}
 			}
 			}
+		// If a shield is hit, decrease its health
 		for (int x=0; x<20; x++){
 			if (shieldstate.get(x)>0){
 					int mod=(x%4);
@@ -283,8 +294,9 @@ public class SpaceInvaders {
 		}
 	}
 	
-	
-	private boolean rowkilled(){//1 for left row, 2 for right row
+	// Boolean function for detecting is an entire row of aliens have been killed. If so, it will
+	//    increase the side to side movement needed. Also ends the game if all aliens have been killed.
+	private boolean rowkilled(){
 		boolean left=true;
 		boolean right=true;
 		if (leftrowkilled==10)return false;
