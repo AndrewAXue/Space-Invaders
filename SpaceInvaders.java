@@ -46,7 +46,7 @@ public class SpaceInvaders {
 	int aliensize=40;
 	int leftrowkilled;
 	int rightrowkilled;
-	int shootchance=9000;
+	int shootchance=5000;
 	
 	boolean playbullet=false;
 	int playbulletx;
@@ -107,9 +107,18 @@ public class SpaceInvaders {
 			for (int x=0; x<5; x++){
 				for (int y=0; y<10; y++){
 					if (gamestate.get(x).get(y)>=1){
-						if (alieny+(x*70)>=780){dead=true; window.repaint();}
+						if (alieny+(x*70)+40>=780){dead=true; window.repaint();}
 						grap.fillRect(firstalien+(y*70), alieny+(x*70), aliensize, aliensize);
-						if (shoot.nextInt(shootchance-(killed*30))==0){
+						grap.setColor(Color.BLACK);
+						
+						for (int i=0; i<=10; i+=5){
+							grap.fillRect(firstalien+(y*70), alieny+(x*70)+i, 15-i, 5);
+							grap.fillRect(firstalien+(y*70)+25+i, alieny+(x*70)+i, 15-i, 5);}
+						
+						grap.fillRect(firstalien+(y*70)+10, alieny+(x*70)+35, 20, 5);
+						grap.fillRect(firstalien+(y*70)+15, alieny+(x*70)+30, 10, 5);
+						grap.setColor(Color.GREEN);
+						if (shoot.nextInt(shootchance-(killed*90))==0){
 							alienshots.add(new ArrayList<Integer>());
 							alienshots.get(alienshots.size()-1).add(firstalien+(y*70)+16);
 							alienshots.get(alienshots.size()-1).add(alieny+(x*70)+40);
@@ -158,8 +167,7 @@ public class SpaceInvaders {
 		}
 
 		public void keyReleased(KeyEvent e) {
-			if (e.getKeyCode()==KeyEvent.VK_LEFT||e.getKeyCode()==KeyEvent.VK_RIGHT)
-				dx=0;
+			if (e.getKeyCode()==KeyEvent.VK_LEFT||e.getKeyCode()==KeyEvent.VK_RIGHT) dx=0;
 			}
 		public void keyTyped(KeyEvent e) {}
 		
@@ -225,13 +233,13 @@ public class SpaceInvaders {
 							shieldstate.set(x, shieldstate.get(x)-1);
 							alienshots.remove(index);} 
 					}
-					else if (mod<=2){
+					else if (mod<=2&&mod!=0){
 						if (xcoord+8>=40+(numshield*200)+(mod*30)&&xcoord<=70+(numshield*200)+(mod*30)
 								&&ycoord+8>=670&&ycoord<=670+30){
 							shieldstate.set(x, shieldstate.get(x)-1);
 							alienshots.remove(index);}
 					}
-					else  if (xcoord+8>=130+(numshield*200)&&xcoord<=160+(numshield*200)
+					else if (xcoord+8>=130+(numshield*200)&&xcoord<=160+(numshield*200)
 							&&ycoord+9>=700&&ycoord<=700+30){
 						shieldstate.set(x, shieldstate.get(x)-1);
 						alienshots.remove(index);}
