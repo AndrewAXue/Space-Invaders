@@ -25,6 +25,7 @@ public class SpaceInvaders {
 	
 	boolean dead=false; 
 	
+	static int brokenshield[][]={{0,10,10,10,20,10},{0,20,10,10,20,0},{0,0,10,10,20,20}};
 	static ArrayList<ArrayList<Integer>> gamestate = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<Integer>> alienshots = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<Integer> shieldstate = new ArrayList<Integer>();
@@ -90,20 +91,25 @@ public class SpaceInvaders {
 			
 			grap.setColor(Color.GREEN);
 			grap.setFont(new Font ("Arial Black", Font.BOLD, 35));
+			// Draws game over screen
 			if (dead){
 				grap.setFont(new Font("Arial Black", Font.BOLD, 40));
 				grap.drawString("GAME OVER!", 250, 300);
 				grap.drawString("Score: "+Integer.toString(score), 250, 400);
 			}
+			// Draws victory screen
 			else if (win){
 				grap.setFont(new Font("Arial Black", Font.BOLD, 40));
 				grap.drawString("YOU WIN!", 300, 300);
 				grap.drawString("Score: "+Integer.toString(score), 250, 400);}
 			
 			else{
+			// Game Score
 		    grap.drawString("Score: "+Integer.toString(score), 300, 45);
+		    // Position
 			grap.fillRect(playerx, 780, 50, 20);
 			grap.fillRect(playerx+21, 772, 9, 9);
+			// Draws in the aliens
 			for (int x=0; x<5; x++){
 				for (int y=0; y<10; y++){
 					if (gamestate.get(x).get(y)>=1){
@@ -126,9 +132,10 @@ public class SpaceInvaders {
 					}
 				}
 				}
-			
+			// Draws in the shields
 			for (int x=0; x<16; x++){
 				if (shieldstate.get(x)>0){
+					grap.setColor(Color.GREEN);
 					int mod=(x%4);
 					int numshield = x/4;
 					if (mod==0){
@@ -138,10 +145,30 @@ public class SpaceInvaders {
 						grap.fillRect(40+(numshield*200)+(mod*30), 670, 30, 30);
 					}
 					else grap.fillRect(130+(numshield*200), 700, 30, 30);
+					grap.setColor(Color.BLACK);
+					if (shieldstate.get(x)<=3){
+						for (int i=shieldstate.get(x)-1;i<3;i++){
+							for (int y=0; y<=4;y+=2){
+								if (mod==0){
+									grap.fillRect(40+(numshield*200)+brokenshield[i][y], 700+brokenshield[i][y+1], 10, 10);
+								}
+								else if (mod<=2){
+									grap.fillRect(40+(numshield*200)+(mod*30)+brokenshield[i][y], 670+brokenshield[i][y+1], 10, 10);
+								}
+								else{
+									grap.fillRect(130+(numshield*200)+brokenshield[i][y], 700+brokenshield[i][y+1], 10, 10);
+								}
+							}
+							
+						}
+					}
 				}
 			}
+			grap.setColor(Color.GREEN);
+			// Draws in the bullet
 			if (playbullet)grap.fillRect(playbulletx, playbullety, 9, 9);
 			grap.setColor(Color.RED);
+			// Draws the alien bullets
 			for (int x=0; x<alienshots.size(); x++){
 				grap.fillRect(alienshots.get(x).get(0), alienshots.get(x).get(1), 8, 8);
 				alienshots.get(x).set(1, alienshots.get(x).get(1)+3);
@@ -223,28 +250,31 @@ public class SpaceInvaders {
 		if (ycoord>=805)alienshots.remove(index);
 		else{
 		// If the alienshots hit a shield, weaken the shield and remove the bullet
-		for (int x=0; x<20; x++){
-			if (shieldstate.get(x)>0){
-					int mod=(x%4);
-					int numshield = x/4;
-					if (mod==0){
-						if (xcoord+8>=40+(numshield*200)&&xcoord<=70+(numshield*200)
-								&&ycoord+8>=700&&ycoord<=700+30){
+			for (int x=0; x<20; x++){
+				if (shieldstate.get(x)>0){
+						int mod=(x%4);
+						int numshield = x/4;
+						if (mod==0){
+							if (xcoord+8>=40+(numshield*200)&&xcoord<=70+(numshield*200)
+									&&ycoord+8>=700&&ycoord<=700+30){
+								shieldstate.set(x, shieldstate.get(x)-1);
+								alienshots.remove(index);
+								break;} 
+						}
+						else if (mod<=2&&mod!=0){
+							if (xcoord+8>=40+(numshield*200)+(mod*30)&&xcoord<=70+(numshield*200)+(mod*30)
+									&&ycoord+8>=670&&ycoord<=670+30){
+								shieldstate.set(x, shieldstate.get(x)-1);
+								alienshots.remove(index);
+								break;}
+						}
+						else if (xcoord+8>=130+(numshield*200)&&xcoord<=160+(numshield*200)
+								&&ycoord+9>=700&&ycoord<=700+30){
 							shieldstate.set(x, shieldstate.get(x)-1);
-							alienshots.remove(index);} 
-					}
-					else if (mod<=2&&mod!=0){
-						if (xcoord+8>=40+(numshield*200)+(mod*30)&&xcoord<=70+(numshield*200)+(mod*30)
-								&&ycoord+8>=670&&ycoord<=670+30){
-							shieldstate.set(x, shieldstate.get(x)-1);
-							alienshots.remove(index);}
-					}
-					else if (xcoord+8>=130+(numshield*200)&&xcoord<=160+(numshield*200)
-							&&ycoord+9>=700&&ycoord<=700+30){
-						shieldstate.set(x, shieldstate.get(x)-1);
-						alienshots.remove(index);}
+							alienshots.remove(index);
+							break;}
+				}
 			}
-		}
 		// If any alienbullet hits the player, the game is over
 		for (int x=0; x<alienshots.size(); x++){
 			int bullxcoord= alienshots.get(x).get(0);
