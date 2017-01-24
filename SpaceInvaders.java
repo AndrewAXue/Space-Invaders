@@ -314,7 +314,8 @@ public class SpaceInvaders {
 						if (playbulletx+9>=40+(numshield*200)&&playbulletx<=70+(numshield*200)
 								&&playbullety+9>=700&&playbullety<=700+30){
 							shieldstate.set(x, shieldstate.get(x)-1);
-							playbullet=false;}
+							playbullet=false;
+							break;}
 						
 						
 					}
@@ -322,12 +323,14 @@ public class SpaceInvaders {
 						if (playbulletx+9>=40+(numshield*200)+(mod*30)&&playbulletx<=70+(numshield*200)+(mod*30)
 								&&playbullety+9>=670&&playbullety<=670+30){
 							shieldstate.set(x, shieldstate.get(x)-1);
-							playbullet=false;}
+							playbullet=false;
+							break;}
 					}
 					else  if (playbulletx+9>=130+(numshield*200)&&playbulletx<=160+(numshield*200)
 							&&playbullety+9>=700&&playbullety<=700+30){
 						shieldstate.set(x, shieldstate.get(x)-1);
-						playbullet=false;}
+						playbullet=false;
+						break;}
 			}
 		}
 	}
